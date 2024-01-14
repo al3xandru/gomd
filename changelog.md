@@ -1,0 +1,1 @@
+ - 2024-01-14 Sun takes a file as positional argument and converts it to stdout

@@ -1,4 +1,4 @@
-- [ ] Take as input a file and process it
+- [x] Take as input a file and process it
 - [ ] Enable a series of extensions
 - [ ] Add command line options for extensions
 - [ ] Take as input either a file or direct input
