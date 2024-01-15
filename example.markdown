@@ -59,7 +59,6 @@ In this section we have a couple of line separators:
 
 It is expected to see 4 horizontal lines above.
 
-### Critical Markdown Section
 
 ### Footnotes
 
@@ -69,3 +68,23 @@ which are an extension of Markdown.
 [^1]: Still, even John Gruber,
 the creator of Markdown,
 uses them.
+
+### Tasks section
+
+- [ ] Add some Critical Markdown text
+ - [ ] With a child task
+- [x] Mark one of these as done
+ 
+### Images
+
+There are 2 types of images:
+
+![no alt](https://64.media.tumblr.com/51065dfde5563682bea1e6e1cd21348c/fa295057f1c6a349-24/s540x810/2365757f68b5f2184e705bb263b64a20ab5c29cf.jpg)
+
+And one with `figure`:
+
+![with figure](https://64.media.tumblr.com/51065dfde5563682bea1e6e1cd21348c/fa295057f1c6a349-24/s540x810/2365757f68b5f2184e705bb263b64a20ab5c29cf.jpg)
+The figcapture is here.
+
+### Critical Markdown Section
+

@@ -11,6 +11,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/google/uuid"
+	figure "github.com/mangoumbrella/goldmark-figure"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
@@ -76,7 +77,8 @@ func main() {
 			extension.TaskList,
 			&frontmatter.Extender{},
 			&anchor.Extender{},
-			&wikilink.Extender{}),
+			&wikilink.Extender{},
+			figure.Figure),
 	)
 
 	ctx := parser.NewContext()
