@@ -60,17 +60,22 @@ func main() {
 		fmt.Fprintf(os.Stderr, "error reading file %s: %v\n",
 			flag.Arg(0),
 			err)
-		os.Exit(5)
+		panic(err)
 	}
+
 	markdown := goldmark.New(
-		goldmark.WithParserOptions(parser.WithAutoHeadingID()),
+		goldmark.WithParserOptions(parser.WithAutoHeadingID()), // required by anchor
 		goldmark.WithExtensions(extension.Footnote,
 			extension.Strikethrough,
 			extension.Typographer,
+			extension.DefinitionList,
+			extension.Table,
+			extension.TaskList,
 			&frontmatter.Extender{},
 			&anchor.Extender{},
 			&wikilink.Extender{}),
 	)
+
 	ctx := parser.NewContext()
 	if err := markdown.Convert(source, os.Stdout, parser.WithContext(ctx)); err != nil {
 		panic(err)
