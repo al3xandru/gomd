@@ -1,5 +1,6 @@
 - [x] Take as input a file and process it
 - [x] Enable a series of extensions
+- [x] Configure footnotes to use a prefix
 - [ ] Add command line options for extensions
 - [ ] Take as input either a file or direct input
 - [ ] Configure footnote output using `extension.FootnoteHTMLRendered`

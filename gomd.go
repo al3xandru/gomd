@@ -10,15 +10,15 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/google/uuid"
+	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
-	"log"
-	"os"
-
-	"github.com/yuin/goldmark"
 	"go.abhg.dev/goldmark/anchor"
 	"go.abhg.dev/goldmark/frontmatter"
 	"go.abhg.dev/goldmark/wikilink"
+	"log"
+	"os"
 )
 
 var (
@@ -63,9 +63,12 @@ func main() {
 		panic(err)
 	}
 
+	footnotePrefix := uuid.NewString()[0:6]
+
 	markdown := goldmark.New(
 		goldmark.WithParserOptions(parser.WithAutoHeadingID()), // required by anchor
-		goldmark.WithExtensions(extension.Footnote,
+		goldmark.WithExtensions(
+			extension.NewFootnote(extension.WithFootnoteIDPrefix([]byte(footnotePrefix))),
 			extension.Strikethrough,
 			extension.Typographer,
 			extension.DefinitionList,
