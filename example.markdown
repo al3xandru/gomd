@@ -88,3 +88,11 @@ The figcapture is here.
 
 ### Critical Markdown Section
 
+There are five additions from Critical Markdown: 
+first is {++ an addition ++},
+followed by {-- deletion of text --},
+and {~~ replacing text ~> with substituting text ~~}.
+
+It also adds support for {>> comments that are visible <<}.
+Last, but not least {== highlighting text ==}{>> with att
+
