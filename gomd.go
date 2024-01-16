@@ -39,18 +39,31 @@ func version() {
 	os.Exit(0)
 }
 
+var flagVersion,
+	noFrontmatter, noDefLists, noTables, noTasks, noFigures,
+	noFootnotes, noStrikethrough, noTypography, noWikilinks, noIds bool
+
 func main() {
 	// Configure logging for a command-line program.
 	log.SetFlags(0)
 	log.SetPrefix("hello: ")
 
-	flagVersion := flag.Bool("version", false, "displays version and exits")
+	flag.BoolVar(&flagVersion, "version", false, "displays version and exits")
+	flag.BoolVar(&noFrontmatter, "no-frontmatter", false, "disables support for front-matter")
+	flag.BoolVar(&noDefLists, "no-definition-lists", false, "disables support for definition lists")
+	flag.BoolVar(&noTables, "no-tables", false, "disables support for tables")
+	flag.BoolVar(&noTasks, "no-tasks", false, "disables support for tasks")
+	flag.BoolVar(&noFigures, "no-figures", false, "disables suport for using figure instead of img")
+	flag.BoolVar(&noFootnotes, "no-footnotes", false, "disables footnote[^fn] processing")
+	flag.BoolVar(&noStrikethrough, "no-strikethrough", false, "disables ~~strikethrough processing")
+	flag.BoolVar(&noTypography, "no-typography", false, "disables typography/smartypants characters")
+	flag.BoolVar(&noWikilinks, "no-wikilinks", false, "disables [[wikilinks]] processing")
+	flag.BoolVar(&noIds, "no-ids", false, "disables generating header IDs")
+	flag.Usage = usage
 
 	// Parse flags.
-	flag.Usage = usage
 	flag.Parse()
-
-	if *flagVersion {
+	if flagVersion {
 		version()
 	}
 	if len(flag.Args()) == 0 {
@@ -66,19 +79,43 @@ func main() {
 
 	footnotePrefix := uuid.NewString()[0:6]
 
+	exts := make([]goldmark.Extender, 0)
+	// block level
+	if !noFrontmatter {
+		exts = append(exts, &frontmatter.Extender{})
+	}
+	if !noDefLists {
+		exts = append(exts, extension.DefinitionList)
+	}
+	if !noTables {
+		exts = append(exts, extension.Table)
+	}
+	if !noTasks {
+		exts = append(exts, extension.TaskList)
+	}
+	if !noFigures {
+		exts = append(exts, figure.Figure)
+	}
+	// span level
+	if !noStrikethrough {
+		exts = append(exts, extension.Strikethrough)
+	}
+	if !noFootnotes {
+		exts = append(exts, extension.NewFootnote(extension.WithFootnoteIDPrefix([]byte(footnotePrefix))))
+	}
+	if !noTypography {
+		exts = append(exts, extension.Typographer)
+	}
+	if !noWikilinks {
+		exts = append(exts, &wikilink.Extender{})
+	}
+	if !noIds {
+		exts = append(exts, &anchor.Extender{})
+	}
+
 	markdown := goldmark.New(
 		goldmark.WithParserOptions(parser.WithAutoHeadingID()), // required by anchor
-		goldmark.WithExtensions(
-			extension.NewFootnote(extension.WithFootnoteIDPrefix([]byte(footnotePrefix))),
-			extension.Strikethrough,
-			extension.Typographer,
-			extension.DefinitionList,
-			extension.Table,
-			extension.TaskList,
-			&frontmatter.Extender{},
-			&anchor.Extender{},
-			&wikilink.Extender{},
-			figure.Figure),
+		goldmark.WithExtensions(exts...),
 	)
 
 	ctx := parser.NewContext()

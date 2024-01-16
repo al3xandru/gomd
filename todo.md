@@ -1,9 +1,11 @@
 - [x] Take as input a file and process it
 - [x] Enable a series of extensions
 - [x] Configure footnotes to use a prefix
-- [ ] Add command line options for extensions
+- [x] Check extensions: definition list, ~~linkify~~, table, tasklist
+- [x] Think about https://github.com/mangoumbrella/goldmark-figure
+- [ ] ~~Configure footnote output using `extension.FootnoteHTMLRendered`~~
+- [x] Add Critical Markdown snippets to [[example.markdown]]
+- [x] Add command line options for extensions
+- [ ] Implement support for Critical Markdown
 - [ ] Take as input either a file or direct input
-- [ ] Configure footnote output using `extension.FootnoteHTMLRendered`
-- [ ] Check extensions: definition list, ~~linkify~~, table, tasklist
-- [ ] Think about https://github.com/mangoumbrella/goldmark-figure
 - [ ] What does `log.SetFlags` do? Configure `log`
