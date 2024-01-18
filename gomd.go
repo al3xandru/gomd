@@ -24,7 +24,7 @@ import (
 )
 
 var (
-	buildVersion = "1.0.0"
+	buildVersion = "1.1.0"
 	buildSha     = "!"
 	buildDate    = "!"
 )
