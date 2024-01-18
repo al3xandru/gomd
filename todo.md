@@ -9,3 +9,5 @@
 - [ ] Implement support for Critical Markdown
 - [ ] Take as input either a file or direct input
 - [ ] What does `log.SetFlags` do? Configure `log`
+- [ ] Create an extension for Critical Markdown
+- [x] How are extensions plugged in

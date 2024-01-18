@@ -10,6 +10,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/al3xandru/gomarkdown/criticalmarkdown"
 	"github.com/google/uuid"
 	figure "github.com/mangoumbrella/goldmark-figure"
 	"github.com/yuin/goldmark"
@@ -39,9 +40,11 @@ func version() {
 	os.Exit(0)
 }
 
+const disableBatteries = false
+
 var flagVersion,
 	noFrontmatter, noDefLists, noTables, noTasks, noFigures,
-	noFootnotes, noStrikethrough, noTypography, noWikilinks, noIds bool
+	noCriticalMarkdown, noFootnotes, noStrikethrough, noTypography, noWikilinks, noIds bool
 
 func main() {
 	// Configure logging for a command-line program.
@@ -49,16 +52,16 @@ func main() {
 	log.SetPrefix("hello: ")
 
 	flag.BoolVar(&flagVersion, "version", false, "displays version and exits")
-	flag.BoolVar(&noFrontmatter, "no-frontmatter", false, "disables support for front-matter")
-	flag.BoolVar(&noDefLists, "no-definition-lists", false, "disables support for definition lists")
-	flag.BoolVar(&noTables, "no-tables", false, "disables support for tables")
-	flag.BoolVar(&noTasks, "no-tasks", false, "disables support for tasks")
-	flag.BoolVar(&noFigures, "no-figures", false, "disables suport for using figure instead of img")
-	flag.BoolVar(&noFootnotes, "no-footnotes", false, "disables footnote[^fn] processing")
-	flag.BoolVar(&noStrikethrough, "no-strikethrough", false, "disables ~~strikethrough processing")
-	flag.BoolVar(&noTypography, "no-typography", false, "disables typography/smartypants characters")
-	flag.BoolVar(&noWikilinks, "no-wikilinks", false, "disables [[wikilinks]] processing")
-	flag.BoolVar(&noIds, "no-ids", false, "disables generating header IDs")
+	flag.BoolVar(&noFrontmatter, "no-frontmatter", disableBatteries, "disables support for front-matter")
+	flag.BoolVar(&noDefLists, "no-definition-lists", disableBatteries, "disables support for definition lists")
+	flag.BoolVar(&noTables, "no-tables", disableBatteries, "disables support for tables")
+	flag.BoolVar(&noTasks, "no-tasks", disableBatteries, "disables support for tasks")
+	flag.BoolVar(&noFigures, "no-figures", disableBatteries, "disables suport for using figure instead of img")
+	flag.BoolVar(&noFootnotes, "no-footnotes", disableBatteries, "disables footnote[^fn] processing")
+	flag.BoolVar(&noStrikethrough, "no-strikethrough", disableBatteries, "disables ~~strikethrough processing")
+	flag.BoolVar(&noTypography, "no-typography", disableBatteries, "disables typography/smartypants characters")
+	flag.BoolVar(&noWikilinks, "no-wikilinks", disableBatteries, "disables [[wikilinks]] processing")
+	flag.BoolVar(&noIds, "no-ids", disableBatteries, "disables generating header IDs")
 	flag.Usage = usage
 
 	// Parse flags.
@@ -97,6 +100,9 @@ func main() {
 		exts = append(exts, figure.Figure)
 	}
 	// span level
+	if !noCriticalMarkdown {
+		exts = append(exts, criticalmarkdown.Extension)
+	}
 	if !noStrikethrough {
 		exts = append(exts, extension.Strikethrough)
 	}
