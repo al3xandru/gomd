@@ -10,8 +10,8 @@ import (
 	"github.com/yuin/goldmark"
 )
 
-// Priority uses same value 500 as extension.Strikethrough
-const Priority = 500
+// DefaultPriority uses same value 500 as extension.Strikethrough
+const DefaultPriority = 500
 
 type criticMarkupExtension struct {
 }
@@ -20,4 +20,20 @@ var Extension = &criticMarkupExtension{}
 
 func (e *criticMarkupExtension) Extend(markdown goldmark.Markdown) {
 	AdditionExtension.Extend(markdown)
+	DeletionExtension.Extend(markdown)
 }
+
+//
+
+var (
+	addStartSeq = []byte("{++")
+	addEndSeq   = []byte("++}")
+	delStartSeq = []byte("{--")
+	delEndSeq   = []byte("--}")
+	subOSeq     = []byte("{~~")
+	subESeq     = []byte("~~}")
+	comOSeq     = []byte("{>>")
+	comESeq     = []byte("<<}")
+	higOSeq     = []byte("{==")
+	higESeq     = []byte("==}")
+)

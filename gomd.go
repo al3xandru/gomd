@@ -59,7 +59,7 @@ func main() {
 	flag.BoolVar(&noFigures, "no-figures", disableBatteries, "disables suport for using figure instead of img")
 	flag.BoolVar(&noFootnotes, "no-footnotes", disableBatteries, "disables footnote[^fn] processing")
 	flag.BoolVar(&noStrikethrough, "no-strikethrough", disableBatteries, "disables ~~strikethrough processing")
-	flag.BoolVar(&noTypography, "no-typography", disableBatteries, "disables typography/smartypants characters")
+	flag.BoolVar(&noTypography, "no-typography", false, "disables typography/smartypants characters")
 	flag.BoolVar(&noWikilinks, "no-wikilinks", disableBatteries, "disables [[wikilinks]] processing")
 	flag.BoolVar(&noIds, "no-ids", disableBatteries, "disables generating header IDs")
 	flag.Usage = usage

@@ -15,11 +15,6 @@ type additionParser struct{}
 
 var defaultAdditionParser = &additionParser{}
 
-var (
-	openSeq = []byte("{++")
-	endSeq  = []byte("++}")
-)
-
 func (p *additionParser) Trigger() []byte {
 	return []byte{'{'}
 }
@@ -29,13 +24,13 @@ func (p *additionParser) Parse(parent ast.Node, block text.Reader, pc parser.Con
 	if len(line) == 0 {
 		return nil
 	}
-	if !bytes.HasPrefix(line, openSeq) {
+	if !bytes.HasPrefix(line, addStartSeq) {
 		return nil
 	}
-	if endIndx := bytes.Index(line, endSeq); endIndx > -1 {
-		block.Advance(endIndx + len(endSeq))
+	if endIndx := bytes.Index(line, addEndSeq); endIndx > -1 {
+		block.Advance(endIndx + len(addEndSeq))
 
-		seg = text.NewSegment(seg.Start+len(openSeq), seg.Start+endIndx)
+		seg = text.NewSegment(seg.Start+len(addStartSeq), seg.Start+endIndx)
 		node := NewAdditionNode()
 		node.AppendChild(node, ast.NewTextSegment(seg))
 		return node
@@ -46,13 +41,13 @@ func (p *additionParser) Parse(parent ast.Node, block text.Reader, pc parser.Con
 		for endIndx < 0 && bytes.HasSuffix(line, []byte{'\n'}) {
 			block.Advance(len(line))
 			line, contseg = block.PeekLine()
-			endIndx = bytes.Index(line, endSeq)
+			endIndx = bytes.Index(line, addEndSeq)
 			multiLine = append(multiLine, line...)
 		}
 		if endIndx >= 0 {
-			block.Advance(endIndx + len(endSeq))
+			block.Advance(endIndx + len(addEndSeq))
 
-			seg = text.NewSegment(seg.Start+len(openSeq), contseg.Start+endIndx)
+			seg = text.NewSegment(seg.Start+len(addStartSeq), contseg.Start+endIndx)
 			node := NewAdditionNode()
 			node.AppendChild(node, ast.NewTextSegment(seg))
 			return node
@@ -115,9 +110,9 @@ var AdditionExtension = &additionExtension{}
 func (e *additionExtension) Extend(markdown goldmark.Markdown) {
 	markdown.Parser().AddOptions(
 		parser.WithInlineParsers(
-			util.Prioritized(NewAdditionParser(), Priority)))
+			util.Prioritized(NewAdditionParser(), DefaultPriority)))
 
 	markdown.Renderer().AddOptions(
 		renderer.WithNodeRenderers(
-			util.Prioritized(NewAdditionHTMLRenderer(), Priority)))
+			util.Prioritized(NewAdditionHTMLRenderer(), DefaultPriority)))
 }
