@@ -10,7 +10,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/al3xandru/gomarkdown/criticalmarkdown"
+	"github.com/al3xandru/gomarkdown/criticmarkup"
 	"github.com/google/uuid"
 	figure "github.com/mangoumbrella/goldmark-figure"
 	"github.com/yuin/goldmark"
@@ -101,7 +101,7 @@ func main() {
 	}
 	// span level
 	if !noCriticalMarkdown {
-		exts = append(exts, criticalmarkdown.Extension)
+		exts = append(exts, criticmarkup.Extension)
 	}
 	if !noStrikethrough {
 		exts = append(exts, extension.Strikethrough)

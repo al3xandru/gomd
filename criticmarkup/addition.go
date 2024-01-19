@@ -1,4 +1,4 @@
-package criticalmarkdown
+package criticmarkup
 
 import (
 	"bytes"
@@ -11,20 +11,20 @@ import (
 	"github.com/yuin/goldmark/util"
 )
 
-type cmAdditionParser struct{}
+type additionParser struct{}
 
-var defaultAdditionParser = &cmAdditionParser{}
+var defaultAdditionParser = &additionParser{}
 
 var (
 	openSeq = []byte("{++")
 	endSeq  = []byte("++}")
 )
 
-func (p *cmAdditionParser) Trigger() []byte {
+func (p *additionParser) Trigger() []byte {
 	return []byte{'{'}
 }
 
-func (p *cmAdditionParser) Parse(parent ast.Node, block text.Reader, pc parser.Context) ast.Node {
+func (p *additionParser) Parse(parent ast.Node, block text.Reader, pc parser.Context) ast.Node {
 	line, seg := block.PeekLine()
 	if len(line) == 0 {
 		return nil
@@ -36,7 +36,7 @@ func (p *cmAdditionParser) Parse(parent ast.Node, block text.Reader, pc parser.C
 		block.Advance(endIndx + len(endSeq))
 
 		seg = text.NewSegment(seg.Start+len(openSeq), seg.Start+endIndx)
-		node := NewAddition()
+		node := NewAdditionNode()
 		node.AppendChild(node, ast.NewTextSegment(seg))
 		return node
 	} else {
@@ -53,7 +53,7 @@ func (p *cmAdditionParser) Parse(parent ast.Node, block text.Reader, pc parser.C
 			block.Advance(endIndx + len(endSeq))
 
 			seg = text.NewSegment(seg.Start+len(openSeq), contseg.Start+endIndx)
-			node := NewAddition()
+			node := NewAdditionNode()
 			node.AppendChild(node, ast.NewTextSegment(seg))
 			return node
 		} else {
@@ -63,19 +63,19 @@ func (p *cmAdditionParser) Parse(parent ast.Node, block text.Reader, pc parser.C
 	}
 }
 
-func NewCMAdditionParser() parser.InlineParser {
+func NewAdditionParser() parser.InlineParser {
 	return defaultAdditionParser
 }
 
-// StrikethroughHTMLRenderer is a renderer.NodeRenderer implementation that
-// renders Strikethrough nodes.
-type StrikethroughHTMLRenderer struct {
+// AdditionHTMLRenderer is a renderer.NodeRenderer implementation that
+// renders CriticMarkup addition nodes.
+type AdditionHTMLRenderer struct {
 	html.Config
 }
 
-// NewStrikethroughHTMLRenderer returns a new StrikethroughHTMLRenderer.
-func NewStrikethroughHTMLRenderer(opts ...html.Option) renderer.NodeRenderer {
-	r := &StrikethroughHTMLRenderer{
+// NewAdditionHTMLRenderer returns a new AdditionHTMLRenderer.
+func NewAdditionHTMLRenderer(opts ...html.Option) renderer.NodeRenderer {
+	r := &AdditionHTMLRenderer{
 		Config: html.NewConfig(),
 	}
 	for _, opt := range opts {
@@ -85,19 +85,18 @@ func NewStrikethroughHTMLRenderer(opts ...html.Option) renderer.NodeRenderer {
 }
 
 // RegisterFuncs implements renderer.NodeRenderer.RegisterFuncs.
-func (r *StrikethroughHTMLRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {
-	reg.Register(KindCriticalMarkdownAddition, r.renderStrikethrough)
+func (r *AdditionHTMLRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {
+	reg.Register(KindAddition, r.renderAddition)
 }
 
-// StrikethroughAttributeFilter defines attribute names which dd elements can have.
-var StrikethroughAttributeFilter = html.GlobalAttributeFilter
+// InsAdditionAttributeFilter defines attribute names which ins elements can have.
+var InsAdditionAttributeFilter = html.GlobalAttributeFilter
 
-func (r *StrikethroughHTMLRenderer) renderStrikethrough(
-	w util.BufWriter, source []byte, n ast.Node, entering bool) (ast.WalkStatus, error) {
+func (r *AdditionHTMLRenderer) renderAddition(w util.BufWriter, source []byte, n ast.Node, entering bool) (ast.WalkStatus, error) {
 	if entering {
 		if n.Attributes() != nil {
 			_, _ = w.WriteString("<ins")
-			html.RenderAttributes(w, n, StrikethroughAttributeFilter)
+			html.RenderAttributes(w, n, InsAdditionAttributeFilter)
 			_ = w.WriteByte('>')
 		} else {
 			_, _ = w.WriteString("<ins>")
@@ -108,16 +107,17 @@ func (r *StrikethroughHTMLRenderer) renderStrikethrough(
 	return ast.WalkContinue, nil
 }
 
-type addition struct{}
+type additionExtension struct{}
 
-var CMAddition = &addition{}
+// AdditionExtension supports CriticMarkup addition syntax
+var AdditionExtension = &additionExtension{}
 
-func (e *addition) Extend(markdown goldmark.Markdown) {
+func (e *additionExtension) Extend(markdown goldmark.Markdown) {
 	markdown.Parser().AddOptions(
 		parser.WithInlineParsers(
-			util.Prioritized(NewCMAdditionParser(), Priority)))
+			util.Prioritized(NewAdditionParser(), Priority)))
 
 	markdown.Renderer().AddOptions(
 		renderer.WithNodeRenderers(
-			util.Prioritized(NewStrikethroughHTMLRenderer(), Priority)))
+			util.Prioritized(NewAdditionHTMLRenderer(), Priority)))
 }
