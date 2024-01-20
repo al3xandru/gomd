@@ -37,16 +37,18 @@ func (p *addParser) Parse(parent ast.Node, block text.Reader, pc parser.Context)
 			block.Advance(len(line))
 			line, endSeg = block.PeekLine()
 			endIndex = bytes.Index(line, addEndSeq)
-			endIndex = bytes.Index(line, addEndSeq)
 		}
 	}
 	if endIndex >= 0 {
 		seg = text.NewSegment(seg.Start+len(addStartSeq), endSeg.Start+endIndex)
 		node := NewMarkupNode(KindAddition, seg)
 
-		block.Advance(endIndex + len(addEndSeq))
+		if node != nil {
+			block.Advance(endIndex + len(addEndSeq))
+		}
 		return node
 	} else {
+		// the end markup was not found; need to tell the parser to get back to the original position
 		block.ResetPosition()
 		return nil
 	}
