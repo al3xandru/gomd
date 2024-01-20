@@ -21,6 +21,7 @@ var Extension = &criticMarkupExtension{}
 func (e *criticMarkupExtension) Extend(markdown goldmark.Markdown) {
 	AdditionExtension.Extend(markdown)
 	DeletionExtension.Extend(markdown)
+	SubExtension.Extend(markdown)
 }
 
 //
