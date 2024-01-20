@@ -9,9 +9,8 @@ Second is **deletion** used {--to remove text--} which results in `<del>`.
 Third is **substituion** used to {~~replace some text~>with new text~~} 
 which results in a `<del>` followed by `<ins>`. 
 
-Forth is **comment** used to {>> add comments that are visible <<} 
+Forth is **comment** used to {>>add comments that are visible<<} 
 which is transformed into `<span class="critic comment">`.
-
 
 Last, the **highlight** used {==to highlight some text==}{>>and add comments to it<<}
 which becomes a `<mark>`, followed by the optional comment.
