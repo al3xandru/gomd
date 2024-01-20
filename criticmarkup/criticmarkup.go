@@ -23,6 +23,7 @@ func (e *criticMarkupExtension) Extend(markdown goldmark.Markdown) {
 	DeletionExtension.Extend(markdown)
 	SubExtension.Extend(markdown)
 	CommentExtension.Extend(markdown)
+	HighlightExtension.Extend(markdown)
 }
 
 //

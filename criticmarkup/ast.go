@@ -12,9 +12,10 @@ type MarkupNode struct {
 }
 
 var (
-	KindAddition = ast.NewNodeKind("cmAdd")
-	KindDelete   = ast.NewNodeKind("cmDelete")
-	KindComment  = ast.NewNodeKind("cmComment")
+	KindAddition  = ast.NewNodeKind("cmAdd")
+	KindDelete    = ast.NewNodeKind("cmDelete")
+	KindComment   = ast.NewNodeKind("cmComment")
+	KindHighlight = ast.NewNodeKind("cmHighlight")
 )
 
 func (n *MarkupNode) Kind() ast.NodeKind {
