@@ -36,6 +36,21 @@ func (p *markupParser) Trigger() []byte {
 	return []byte{'{'}
 }
 
+//
+
+var (
+	additionStart     = []byte("{++")
+	additionClose     = []byte("++}")
+	deletionStart     = []byte("{--")
+	deletionClose     = []byte("--}")
+	substitutionStart = []byte("{~~")
+	substitutionClose = []byte("~~}")
+	commentStart      = []byte("{>>")
+	commentClose      = []byte("<<}")
+	highlightStart    = []byte("{==")
+	highlightClose    = []byte("==}")
+)
+
 func (p *markupParser) Parse(parent ast.Node, block text.Reader, pc parser.Context) ast.Node {
 	line, seg := block.PeekLine()
 	if len(line) == 0 {
@@ -56,11 +71,12 @@ func (p *markupParser) Parse(parent ast.Node, block text.Reader, pc parser.Conte
 		}
 	}
 	if endIndex >= 0 {
+		block.Advance(endIndex + len(p.closeSequence))
+
 		seg = text.NewSegment(seg.Start+len(p.openSequence), endSeg.Start+endIndex)
 		node := NewMarkupNode(p.kind, seg)
 		node = p.apply(node)
 
-		block.Advance(endIndex + len(addEndSeq))
 		return node
 	} else {
 		block.ResetPosition()

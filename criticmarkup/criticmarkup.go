@@ -25,18 +25,3 @@ func (e *criticMarkupExtension) Extend(markdown goldmark.Markdown) {
 	CommentExtension.Extend(markdown)
 	HighlightExtension.Extend(markdown)
 }
-
-//
-
-var (
-	addStartSeq = []byte("{++")
-	addEndSeq   = []byte("++}")
-	delStartSeq = []byte("{--")
-	delEndSeq   = []byte("--}")
-	subOSeq     = []byte("{~~")
-	subESeq     = []byte("~~}")
-	comOSeq     = []byte("{>>")
-	comESeq     = []byte("<<}")
-	higOSeq     = []byte("{==")
-	higESeq     = []byte("==}")
-)

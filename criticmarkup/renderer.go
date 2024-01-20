@@ -36,7 +36,7 @@ func (r *HTMLRenderer) renderHTML(w util.BufWriter, source []byte, n ast.Node, e
 	if entering {
 		if n.Attributes() != nil {
 			_, _ = w.WriteString(fmt.Sprintf("<%s", r.Tag))
-			html.RenderAttributes(w, n, InsAdditionAttributeFilter)
+			html.RenderAttributes(w, n, html.GlobalAttributeFilter)
 			_ = w.WriteByte('>')
 		} else {
 			_, _ = w.WriteString(fmt.Sprintf("<%s>", r.Tag))

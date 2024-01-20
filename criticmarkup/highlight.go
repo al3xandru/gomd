@@ -7,7 +7,7 @@ import (
 	"github.com/yuin/goldmark/util"
 )
 
-var defaultHighlightParser = NewMarkupParser(higOSeq, higESeq, KindHighlight, nil)
+var defaultHighlightParser = NewMarkupParser(highlightStart, highlightClose, KindHighlight, nil)
 
 var defaultHighlightRenderer = NewHTMLRenderer(KindHighlight, "mark")
 

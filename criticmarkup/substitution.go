@@ -17,63 +17,56 @@ func (p *subParser) Trigger() []byte {
 	return []byte{'{'}
 }
 
-func (p *subParser) Parse(parent ast.Node, block text.Reader, pc parser.Context) ast.Node {
+func (p *subParser) Parse(parent ast.Node, block text.Reader, _ parser.Context) ast.Node {
 	line, seg := block.PeekLine()
 	if len(line) == 0 {
 		return nil
 	}
-	if !bytes.HasPrefix(line, subOSeq) {
+	if !bytes.HasPrefix(line, substitutionStart) {
 		return nil
 	}
-	if endIndx := bytes.Index(line, subESeq); endIndx > -1 {
-		sepIdx := bytes.Index(line[0:endIndx], []byte("~>"))
-		if sepIdx < 0 {
-			return nil
-		}
+	endIdx := bytes.Index(line, substitutionClose)
+	endSeg := seg
 
-		block.Advance(endIndx + len(subESeq))
-
-		delSeg := text.NewSegment(seg.Start+len(subOSeq), seg.Start+sepIdx)
-		node := NewMarkupNode(KindDelete, delSeg)
-		parent.AppendChild(parent, node)
-		insSeg := text.NewSegment(seg.Start+sepIdx+2, seg.Start+endIndx)
-		node = NewMarkupNode(KindAddition, insSeg)
-
-		return node
-	} else {
+	if endIdx < 0 {
 		// might be split across multiple lines
-		multiLine := bytes.Clone(line)
-		contseg := seg
-		for endIndx < 0 && bytes.HasSuffix(line, []byte{'\n'}) {
+		for endIdx < 0 && bytes.HasSuffix(line, []byte{'\n'}) {
 			block.Advance(len(line))
-			line, contseg = block.PeekLine()
-			endIndx = bytes.Index(line, delEndSeq)
-			multiLine = append(multiLine, line...)
+			line, endSeg = block.PeekLine()
+			endIdx = bytes.Index(line, substitutionClose)
 		}
-		if endIndx >= 0 {
-			block.Advance(endIndx + len(delEndSeq))
-
-			seg = text.NewSegment(seg.Start+len(delStartSeq), contseg.Start+endIndx)
-			node := NewMarkupNode(KindDelete, seg)
-			return node
-		} else {
+	}
+	if endIdx >= 0 {
+		// look for separator; if none found the markup is broken
+		splitAt := bytes.Index(line[0:endIdx], []byte("~>"))
+		if splitAt < 0 {
 			block.ResetPosition()
 			return nil
 		}
-	}
-}
 
-func NewSubParser() parser.InlineParser {
-	return defaultSubParser
+		block.Advance(endIdx + len(substitutionClose))
+
+		delSeg := text.NewSegment(seg.Start+len(substitutionStart), endSeg.Start+splitAt)
+		delNode := NewMarkupNode(KindDelete, delSeg)
+		parent.AppendChild(parent, delNode)
+
+		insSeg := text.NewSegment(endSeg.Start+splitAt+2, endSeg.Start+endIdx)
+		insNode := NewMarkupNode(KindAddition, insSeg)
+
+		return insNode
+	} else {
+		block.ResetPosition()
+		return nil
+	}
 }
 
 type subExtension struct{}
 
-// DeletionExtension supports CriticMarkup addition syntax
+// SubExtension supports substitution markup from CriticMarkup
 var SubExtension = &subExtension{}
 
 func (e *subExtension) Extend(markdown goldmark.Markdown) {
 	markdown.Parser().AddOptions(
 		parser.WithInlineParsers(
-			util.Prioritized(NewSubParser(), DefaultPriority)))
+			util.Prioritized(defaultSubParser, DefaultPriority)))
 }
