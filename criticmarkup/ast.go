@@ -6,30 +6,13 @@ import (
 	"github.com/yuin/goldmark/text"
 )
 
-type AdditionNode struct {
-	ast.BaseInline
-}
-
 type MarkupNode struct {
 	ast.BaseInline
 	kind ast.NodeKind
 }
 
-// TODO implement Dump
-func (n *AdditionNode) Dump(source []byte, level int) {
-	fmt.Printf("AdditionNode.Dump: %s %d\n", source, level)
-}
-
 var KindAddition = ast.NewNodeKind("cmAdd")
 var KindDelete = ast.NewNodeKind("cmDelete")
-
-func (n *AdditionNode) Kind() ast.NodeKind {
-	return KindAddition
-}
-
-func NewAdditionNode() *AdditionNode {
-	return &AdditionNode{}
-}
 
 func (n *MarkupNode) Kind() ast.NodeKind {
 	return n.kind
