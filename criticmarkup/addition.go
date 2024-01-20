@@ -11,15 +11,15 @@ import (
 	"github.com/yuin/goldmark/util"
 )
 
-type additionParser struct{}
+type addParser struct{}
 
-var defaultAdditionParser = &additionParser{}
+var defaultaddParser = &addParser{}
 
-func (p *additionParser) Trigger() []byte {
+func (p *addParser) Trigger() []byte {
 	return []byte{'{'}
 }
 
-func (p *additionParser) Parse(parent ast.Node, block text.Reader, pc parser.Context) ast.Node {
+func (p *addParser) Parse(parent ast.Node, block text.Reader, pc parser.Context) ast.Node {
 	line, seg := block.PeekLine()
 	if len(line) == 0 {
 		return nil
@@ -27,39 +27,34 @@ func (p *additionParser) Parse(parent ast.Node, block text.Reader, pc parser.Con
 	if !bytes.HasPrefix(line, addStartSeq) {
 		return nil
 	}
-	if endIndx := bytes.Index(line, addEndSeq); endIndx > -1 {
-		block.Advance(endIndx + len(addEndSeq))
 
-		seg = text.NewSegment(seg.Start+len(addStartSeq), seg.Start+endIndx)
-		node := NewAdditionNode()
-		node.AppendChild(node, ast.NewTextSegment(seg))
-		return node
-	} else {
+	endIndex := bytes.Index(line, addEndSeq)
+	endSeg := seg
+
+	if endIndex < 0 {
 		// might be split across multiple lines
-		multiLine := bytes.Clone(line)
-		contseg := seg
-		for endIndx < 0 && bytes.HasSuffix(line, []byte{'\n'}) {
+		for endIndex < 0 && bytes.HasSuffix(line, []byte{'\n'}) {
 			block.Advance(len(line))
-			line, contseg = block.PeekLine()
-			endIndx = bytes.Index(line, addEndSeq)
-			multiLine = append(multiLine, line...)
-		}
-		if endIndx >= 0 {
-			block.Advance(endIndx + len(addEndSeq))
-
-			seg = text.NewSegment(seg.Start+len(addStartSeq), contseg.Start+endIndx)
-			node := NewAdditionNode()
-			node.AppendChild(node, ast.NewTextSegment(seg))
-			return node
-		} else {
-			block.ResetPosition()
-			return nil
+			line, endSeg = block.PeekLine()
+			endIndex = bytes.Index(line, addEndSeq)
+			endIndex = bytes.Index(line, addEndSeq)
 		}
 	}
+	if endIndex >= 0 {
+		seg = text.NewSegment(seg.Start+len(addStartSeq), endSeg.Start+endIndex)
+		node := NewMarkupNode(KindAddition, seg)
+
+		block.Advance(endIndex + len(addEndSeq))
+		return node
+	} else {
+		block.ResetPosition()
+		return nil
+	}
+
 }
 
-func NewAdditionParser() parser.InlineParser {
-	return defaultAdditionParser
+func NewAddParser() parser.InlineParser {
+	return defaultaddParser
 }
 
 // AdditionHTMLRenderer is a renderer.NodeRenderer implementation that
@@ -110,7 +105,7 @@ var AdditionExtension = &additionExtension{}
 func (e *additionExtension) Extend(markdown goldmark.Markdown) {
 	markdown.Parser().AddOptions(
 		parser.WithInlineParsers(
-			util.Prioritized(NewAdditionParser(), DefaultPriority)))
+			util.Prioritized(NewAddParser(), DefaultPriority)))
 
 	markdown.Renderer().AddOptions(
 		renderer.WithNodeRenderers(
