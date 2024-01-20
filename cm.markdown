@@ -1,26 +1,36 @@
-There are five additions from Critical Markdown:
-first is {++an addition++},
-followed by {--deletion of text --},
-and {~~replacing text~>with substituting text~~}.
+# Critic Markup
 
-It also adds support for {>> comments that are visible <<}.
-Last, but not least {==highlighting text==}{>>with comments<<}.
+There are five additions from Critical Markdown. 
 
-Some rules:
+First is **addition** used {++to add new text++} which results in `<ins>`.
 
-*   space inside the element must be part of the output
-*   addition results in `<ins>`
-*   deletion in `<del>`
-*   substitutions in `<del>` followed by `<ins>`
-*   comments in `<span class="critic comment">`
-*   and highlights in `<mark>` (followed optionally by comment).
+Second is **deletion** used {--to remove text--} which results in `<del>`.
 
-There are some rules about handling spaces, newlines, etc.
-that I'll ignore initially.
+Third is **substituion** used to {~~replace some text~>with new text~~} 
+which results in a `<del>` followed by `<ins>`. 
 
-How is an {++addition with
-newlines behave
-across three lines, but no new paragraphs++}. This is not clear.
+Forth is **comment** used to {>> add comments that are visible <<} 
+which is transformed into `<span class="critic comment">`.
 
-Does ~~strike through
-work across line~~?
+
+Last, the **highlight** used {==to highlight some text==}{>>and add comments to it<<}
+which becomes a `<mark>`, followed by the optional comment.
+
+
+The rule for these elements is that space is significant:
+
+*   {++ this addition has space at the beginning and end ++}
+*   {-- this deletion has space at the beginning and end --}
+*   {~~ this replacement has spaces surrounded removed text ~> and the new text ~~}
+
+The following paragraphs are intended to show multi-line usage.
+
+We start with an {++addition with
+two newlines 
+across three lines, but no new paragraphs++}.
+
+We follow with a  {--deletion 
+that 
+spans
+four lines--} to complete.
+
