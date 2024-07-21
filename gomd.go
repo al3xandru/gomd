@@ -8,6 +8,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"github.com/al3xandru/gomarkdown/criticmarkup"
@@ -24,13 +25,13 @@ import (
 )
 
 var (
-	buildVersion = "1.1.0"
+	buildVersion = "1.2.0"
 	buildSha     = "!"
 	buildDate    = "!"
 )
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "usage: gomd [options] file\n")
+	fmt.Fprintf(os.Stderr, "usage: gomd [options] [file]\n")
 	flag.PrintDefaults()
 	os.Exit(2)
 }
@@ -68,16 +69,30 @@ func main() {
 	flag.Parse()
 	if flagVersion {
 		version()
-	}
-	if len(flag.Args()) == 0 {
 		flag.Usage()
+		os.Exit(0)
 	}
-	source, err := os.ReadFile(flag.Arg(0))
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error reading file %s: %v\n",
-			flag.Arg(0),
-			err)
-		panic(err)
+
+	var source []byte
+	if len(flag.Args()) == 0 {
+		// I don't know if this block is correct
+		scanner := bufio.NewScanner(os.Stdin)
+		for scanner.Scan() {
+			source = append(source, []byte("\n")...)
+			source = append(source, scanner.Bytes()...)
+		}
+		if err := scanner.Err(); err != nil {
+			panic(err)
+		}
+	} else {
+		var err error
+		source, err = os.ReadFile(flag.Arg(0))
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error reading file %s: %v\n",
+				flag.Arg(0),
+				err)
+			panic(err)
+		}
 	}
 
 	footnotePrefix := uuid.NewString()[0:6]
